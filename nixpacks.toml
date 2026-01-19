@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs_24"]
+
+[phases.install]
+cmds = [
+  "yarn install --immutable",
+  "yarn build"
+]
+
+[start]
+cmd = "yarn start"
