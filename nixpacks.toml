@@ -1,5 +1,5 @@
-[phases.setup]
-nixPkgs = ["nodejs_24"]
+[providers.node]
+version = "24"
 
 [phases.install]
 cmds = [
