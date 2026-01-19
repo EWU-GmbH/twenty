@@ -212,8 +212,8 @@
     "docs:generate-navigation-template": "tsx packages/twenty-docs/scripts/generate-navigation-template.ts",
     "start": "sh scripts/start.sh",
     "start:prod": "cd packages/twenty-server && node dist/main",
-    "build": "npx nx run-many -t build -p twenty-server twenty-front && npm run copy-frontend",
-    "copy-frontend": "mkdir -p packages/twenty-server/dist/front && if [ -d packages/twenty-front/build ] && [ \"$(ls -A packages/twenty-front/build 2>/dev/null)\" ]; then cp -r packages/twenty-front/build/* packages/twenty-server/dist/front/; else echo 'Error: Frontend build directory is empty or does not exist'; exit 1; fi"
+    "build": "NODE_ENV=production npx nx run-many -t build -p twenty-server twenty-front && npm run copy-frontend",
+    "copy-frontend": "mkdir -p packages/twenty-server/dist/front && if [ -d packages/twenty-front/build ] && [ \"$(ls -A packages/twenty-front/build 2>/dev/null)\" ]; then cp -r packages/twenty-front/build/* packages/twenty-server/dist/front/ && echo '✅ Frontend files copied successfully'; else echo '❌ Error: Frontend build directory is empty or does not exist' >&2; ls -la packages/twenty-front/ >&2; exit 1; fi"
   },
   "workspaces": {
     "packages": [
