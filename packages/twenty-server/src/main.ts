@@ -79,15 +79,38 @@ const bootstrap = async () => {
   generateFrontConfig();
 
   const port = twentyConfigService.get('NODE_PORT');
+
+  // Dual logging: both logger and console for visibility
   logger.log(`📡 Starting server on port ${port}...`, 'Bootstrap');
+  console.log(`[Bootstrap] 📡 Starting server on port ${port}...`);
+  console.log(`[Bootstrap] PORT from env: ${process.env.PORT || 'not set'}`);
+  console.log(`[Bootstrap] NODE_PORT from env: ${process.env.NODE_PORT || 'not set'}`);
+  console.log(`[Bootstrap] NODE_PORT from config service: ${port}`);
 
-  await app.listen(port);
+  try {
+    const server = await app.listen(port, '0.0.0.0');
 
-  logger.log(`🚀 Server is listening on port ${port}`, 'Bootstrap');
-  logger.log(`🏥 Health check available at /healthz`, 'Bootstrap');
+    // Dual logging: both logger and console for visibility
+    logger.log(`🚀 Server is listening on port ${port}`, 'Bootstrap');
+    logger.log(`🏥 Health check available at /healthz`, 'Bootstrap');
+    console.log(`[Bootstrap] 🚀 Server is listening on port ${port}`);
+    console.log(`[Bootstrap] 🏥 Health check available at /healthz`);
+    console.log(`[Bootstrap] Server address: ${JSON.stringify(server.address())}`);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    logger.error(`❌ Failed to start server on port ${port}: ${errorMessage}`, errorStack, 'Bootstrap');
+    console.error(`[Bootstrap] ❌ Failed to start server on port ${port}:`, error);
+    console.error(`[Bootstrap] Error details:`, errorMessage);
+    if (errorStack) {
+      console.error(`[Bootstrap] Stack trace:`, errorStack);
+    }
+    throw error;
+  }
 };
 
 bootstrap().catch((error) => {
   console.error('❌ Failed to start server:', error);
+  console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace');
   process.exit(1);
 });
