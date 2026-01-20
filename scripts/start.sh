@@ -11,6 +11,15 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
 
   echo "Current directory: $(pwd)" >&2
 
+  # Railway setzt automatisch PORT - mappe es auf NODE_PORT, falls NODE_PORT nicht gesetzt ist
+  if [ -n "$PORT" ] && [ -z "$NODE_PORT" ]; then
+    export NODE_PORT="$PORT"
+    echo "Mapped Railway PORT ($PORT) to NODE_PORT" >&2
+  fi
+
+  echo "NODE_PORT: ${NODE_PORT:-3000}" >&2
+  echo "PORT: ${PORT:-not set}" >&2
+
   # Prüfe, ob das Frontend-Verzeichnis existiert
   if [ ! -d "dist/front" ]; then
     echo "ERROR: Frontend directory not found at dist/front" >&2
