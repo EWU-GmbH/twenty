@@ -38,12 +38,18 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
 
   # Prüfe, ob dist/main.js oder dist/main existiert
   # NestJS kann beide Formate kompilieren
+  echo "Checking for main file..." >&2
+  echo "  - Checking dist/main.js: $([ -f "dist/main.js" ] && echo "EXISTS" || echo "NOT FOUND")" >&2
+  echo "  - Checking dist/main: $([ -f "dist/main" ] && echo "EXISTS" || echo "NOT FOUND")" >&2
+
   if [ -f "dist/main.js" ]; then
     MAIN_FILE="dist/main.js"
+    echo "✅ Found dist/main.js" >&2
   elif [ -f "dist/main" ]; then
     MAIN_FILE="dist/main"
+    echo "✅ Found dist/main" >&2
   else
-    echo "ERROR: Neither dist/main.js nor dist/main found!" >&2
+    echo "❌ ERROR: Neither dist/main.js nor dist/main found!" >&2
     echo "Contents of dist:" >&2
     ls -la dist/ 2>&1 | head -50 >&2
     exit 1
