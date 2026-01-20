@@ -78,7 +78,11 @@ const bootstrap = async () => {
   // Inject the server url in the frontend page
   generateFrontConfig();
 
-  await app.listen(twentyConfigService.get('NODE_PORT'));
+  const port = twentyConfigService.get('NODE_PORT');
+  await app.listen(port);
+
+  logger.log(`🚀 Server is listening on port ${port}`, 'Bootstrap');
+  logger.log(`🏥 Health check available at /healthz`, 'Bootstrap');
 };
 
 bootstrap();
