@@ -11,14 +11,17 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
 
   echo "Current directory: $(pwd)" >&2
 
-  # Railway setzt automatisch PORT - mappe es auf NODE_PORT, falls NODE_PORT nicht gesetzt ist
-  if [ -n "$PORT" ] && [ -z "$NODE_PORT" ]; then
+  # Railway setzt automatisch PORT - verwende es für NODE_PORT
+  # PORT hat Priorität, falls es gesetzt ist (Railway setzt es automatisch)
+  if [ -n "$PORT" ]; then
     export NODE_PORT="$PORT"
-    echo "Mapped Railway PORT ($PORT) to NODE_PORT" >&2
+    echo "✅ Using Railway PORT ($PORT) for NODE_PORT" >&2
+  else
+    echo "⚠️  PORT not set, using NODE_PORT: ${NODE_PORT:-3000}" >&2
   fi
 
-  echo "NODE_PORT: ${NODE_PORT:-3000}" >&2
-  echo "PORT: ${PORT:-not set}" >&2
+  echo "Final NODE_PORT: $NODE_PORT" >&2
+  echo "Railway PORT: ${PORT:-not set}" >&2
 
   # Prüfe, ob das Frontend-Verzeichnis existiert
   if [ ! -d "dist/front" ]; then
@@ -33,7 +36,24 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
     ls -la dist/front/ | head -20 >&2
   fi
 
-  exec node dist/main
+  # Prüfe, ob dist/main existiert
+  if [ ! -f "dist/main.js" ]; then
+    echo "ERROR: dist/main.js not found!" >&2
+    echo "Contents of dist:" >&2
+    ls -la dist/ 2>&1
+    exit 1
+  fi
+
+  echo "Starting server with NODE_PORT=$NODE_PORT..." >&2
+  echo "Environment check:" >&2
+  echo "  - NODE_ENV: ${NODE_ENV:-not set}" >&2
+  echo "  - RAILWAY_ENVIRONMENT_ID: ${RAILWAY_ENVIRONMENT_ID:-not set}" >&2
+  echo "  - PORT: ${PORT:-not set}" >&2
+  echo "  - NODE_PORT: ${NODE_PORT:-not set}" >&2
+  echo "  - Node version: $(node --version)" >&2
+
+  # Starte den Server (exec ersetzt den Shell-Prozess)
+  exec node dist/main.js 2>&1
 else
   echo "🔧 Starting in development mode..."
   npx concurrently --kill-others \
