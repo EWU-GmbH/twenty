@@ -36,11 +36,11 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
     ls -la dist/front/ | head -20 >&2
   fi
 
-  # Prüfe, ob dist/main existiert
-  if [ ! -f "dist/main.js" ]; then
-    echo "ERROR: dist/main.js not found!" >&2
+  # Prüfe, ob dist/main existiert (NestJS kompiliert ohne .js Extension)
+  if [ ! -f "dist/main" ]; then
+    echo "ERROR: dist/main not found!" >&2
     echo "Contents of dist:" >&2
-    ls -la dist/ 2>&1
+    ls -la dist/ 2>&1 | head -50 >&2
     exit 1
   fi
 
@@ -53,7 +53,8 @@ if [ "$NODE_ENV" = "production" ] || [ -n "$RAILWAY_ENVIRONMENT_ID" ]; then
   echo "  - Node version: $(node --version)" >&2
 
   # Starte den Server (exec ersetzt den Shell-Prozess)
-  exec node dist/main.js 2>&1
+  # NestJS kompiliert nach dist/main (ohne .js)
+  exec node dist/main
 else
   echo "🔧 Starting in development mode..."
   npx concurrently --kill-others \
