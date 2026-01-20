@@ -98,6 +98,7 @@ export class AppModule {
       modules.push(
         ServeStaticModule.forRoot({
           rootPath: frontPath,
+          exclude: ['/api*', '/graphql*', '/metadata*', '/rest*', '/healthz'],
         }),
       );
     }
