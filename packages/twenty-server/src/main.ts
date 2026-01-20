@@ -79,10 +79,15 @@ const bootstrap = async () => {
   generateFrontConfig();
 
   const port = twentyConfigService.get('NODE_PORT');
+  logger.log(`📡 Starting server on port ${port}...`, 'Bootstrap');
+
   await app.listen(port);
 
   logger.log(`🚀 Server is listening on port ${port}`, 'Bootstrap');
   logger.log(`🏥 Health check available at /healthz`, 'Bootstrap');
 };
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('❌ Failed to start server:', error);
+  process.exit(1);
+});
